@@ -9,9 +9,10 @@ public class HotspotBehaviour : MonoBehaviour {
 	public bool showing2 = false;
 	public float timeShowing = 5f;
 	public float currentTimeShowing = -1f;
+	Animator animator;
 	// Use this for initialization
 	void Start () {
-		
+		animator = GetComponent<Animator> ();
 	}
 
 	public void onClick(){
@@ -22,6 +23,8 @@ public class HotspotBehaviour : MonoBehaviour {
 			g.SetActive (true);
 			g.SendMessage ("PlayForward", SendMessageOptions.DontRequireReceiver);
 		}
+		if (animator != null)
+			animator.SetTrigger ("Click1");
 	}
 
 	public void onCharacter(){
@@ -29,13 +32,25 @@ public class HotspotBehaviour : MonoBehaviour {
 			return;
 		showing2 = true;
 		foreach (GameObject g in objectsShowingDuringClick) {
+			g.SendMessage ("ResetToBeginning", SendMessageOptions.DontRequireReceiver);
 			g.SetActive (false);
-			g.SendMessage ("PlayReverse", SendMessageOptions.DontRequireReceiver);
 		}
 		foreach (GameObject g in objectsShowingToCharacter) {
 			g.SetActive (true);
 			g.SendMessage ("PlayForward", SendMessageOptions.DontRequireReceiver);
 		}
+		if (animator != null)
+			animator.SetTrigger ("Click2");
+	}
+
+	public void completeTask(){
+		foreach (GameObject g in objectsShowingToCharacter) {
+			g.SendMessage ("ResetToBeginning", SendMessageOptions.DontRequireReceiver);
+			g.SetActive (false);
+		}
+		showing1 = false;
+		showing2 = false;
+		currentTimeShowing = -1f;
 	}
 
 	// Update is called once per frame
@@ -43,15 +58,15 @@ public class HotspotBehaviour : MonoBehaviour {
 		if (showing1) {
 			if (currentTimeShowing < 0f)
 				currentTimeShowing = Time.time;
-			if (currentTimeShowing + timeShowing < Time.time) {
+			/*if (currentTimeShowing + timeShowing < Time.time) {
 				foreach (GameObject g in objectsShowingToCharacter) {
-					g.SendMessage ("PlayReverse", SendMessageOptions.DontRequireReceiver);
+					g.SendMessage ("ResetToBeginning", SendMessageOptions.DontRequireReceiver);
 					g.SetActive (false);
 				}
 				showing1 = false;
 				showing2 = false;
 				currentTimeShowing = -1f;
-			}
+			}*/
 		}
 	}
 }
