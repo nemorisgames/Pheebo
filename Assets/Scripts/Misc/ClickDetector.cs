@@ -5,9 +5,12 @@ using UnityEngine;
 public class ClickDetector : MonoBehaviour {
 	public GameObject spawnObject;
 	Animator animator;
+	public AudioClip[] sounds;
+	AudioSource audio;
 	// Use this for initialization
 	void Start () {
 		animator = GetComponent<Animator> ();
+		audio = GetComponent<AudioSource> ();
 	}
 
 	void OnMouseDown(){
@@ -18,6 +21,9 @@ public class ClickDetector : MonoBehaviour {
 		}
 		if (animator != null)
 			animator.SetTrigger ("Click1");
+		if (sounds != null && sounds.Length > 0) {
+			audio.PlayOneShot (sounds [Random.Range (0, sounds.Length)]);
+		}
 	}
 	
 	// Update is called once per frame

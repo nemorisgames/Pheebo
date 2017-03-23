@@ -5,14 +5,18 @@ using UnityEngine;
 public class HotspotBehaviour : MonoBehaviour {
 	public GameObject[] objectsShowingDuringClick;
 	public GameObject[] objectsShowingToCharacter;
+	public AudioClip soundDuringClick;
+	public AudioClip soundDuringShowing;
 	public bool showing1 = false;
 	public bool showing2 = false;
 	public float timeShowing = 5f;
 	public float currentTimeShowing = -1f;
 	Animator animator;
+	AudioSource audio;
 	// Use this for initialization
 	void Start () {
 		animator = GetComponent<Animator> ();
+		audio = GetComponent<AudioSource> ();
 	}
 
 	public void onClick(){
@@ -25,6 +29,7 @@ public class HotspotBehaviour : MonoBehaviour {
 		}
 		if (animator != null)
 			animator.SetTrigger ("Click1");
+		audio.PlayOneShot (soundDuringClick);
 	}
 
 	public void onCharacter(){
@@ -41,6 +46,7 @@ public class HotspotBehaviour : MonoBehaviour {
 		}
 		if (animator != null)
 			animator.SetTrigger ("Click2");
+		audio.PlayOneShot (soundDuringShowing);
 	}
 
 	public void completeTask(){
