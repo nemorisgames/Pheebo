@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HotspotBehaviour : MonoBehaviour {
+	bool resetObjectsShowingDuringClick = false;
 	public GameObject[] objectsShowingDuringClick;
 	public GameObject[] objectsShowingToCharacter;
 	public AudioClip soundDuringClick;
-	public AudioClip soundDuringShowing;
+	public AudioClip[] soundDuringShowing;
+	public string soundComplete;
+	AudioClip soundCompleteClip;
+	public AudioClip musicLoop;
 	public bool showing1 = false;
 	public bool showing2 = false;
 	public float timeShowing = 5f;
 	public float currentTimeShowing = -1f;
 	Animator animator;
 	AudioSource audio;
+
 	// Use this for initialization
 	void Start () {
 		animator = GetComponent<Animator> ();
 		audio = GetComponent<AudioSource> ();
+		soundCompleteClip = Resources.Load("Sound/es/" + soundComplete) as AudioClip;
 	}
 
 	public void onClick(){
@@ -29,6 +35,8 @@ public class HotspotBehaviour : MonoBehaviour {
 		}
 		if (animator != null)
 			animator.SetTrigger ("Click1");
+		audio.clip = musicLoop;
+		audio.Play ();
 		audio.PlayOneShot (soundDuringClick);
 	}
 
@@ -36,17 +44,26 @@ public class HotspotBehaviour : MonoBehaviour {
 		if (showing2)
 			return;
 		showing2 = true;
-		foreach (GameObject g in objectsShowingDuringClick) {
-			g.SendMessage ("ResetToBeginning", SendMessageOptions.DontRequireReceiver);
-			g.SetActive (false);
-		}
+		if(resetObjectsShowingDuringClick)
+			foreach (GameObject g in objectsShowingDuringClick) {
+				g.SendMessage ("ResetToBeginning", SendMessageOptions.DontRequireReceiver);
+				g.SetActive (false);
+			}
 		foreach (GameObject g in objectsShowingToCharacter) {
 			g.SetActive (true);
 			g.SendMessage ("PlayForward", SendMessageOptions.DontRequireReceiver);
 		}
 		if (animator != null)
 			animator.SetTrigger ("Click2");
-		audio.PlayOneShot (soundDuringShowing);
+		audio.Stop ();
+		foreach (AudioClip a in soundDuringShowing)
+			audio.PlayOneShot (a);
+		StartCoroutine (playCompleteSound ());
+	}
+
+	IEnumerator playCompleteSound(){
+		yield return new WaitForSeconds (1f);
+		audio.PlayOneShot (soundCompleteClip);
 	}
 
 	public void completeTask(){
