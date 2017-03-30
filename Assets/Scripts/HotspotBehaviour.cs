@@ -17,6 +17,7 @@ public class HotspotBehaviour : MonoBehaviour {
 	public float currentTimeShowing = -1f;
 	Animator animator;
 	AudioSource audio;
+	public Animator sketchbook;
 
 	// Use this for initialization
 	void Start () {
@@ -66,11 +67,28 @@ public class HotspotBehaviour : MonoBehaviour {
 		audio.PlayOneShot (soundCompleteClip);
 	}
 
-	public void completeTask(){
+	public void openSketchbook(){
+		sketchbook.gameObject.SetActive (true);
+		sketchbook.SetTrigger ("open");
+	}
+
+	public void closeSketchbook(){
+		sketchbook.SendMessage("closeSketckbook");
+		sketchbook.SetTrigger ("close");
+		StartCoroutine(completeTask ());
+	}
+
+	IEnumerator completeTask(){
+
+		yield return new WaitForSeconds (0.5f);
 		foreach (GameObject g in objectsShowingToCharacter) {
-			g.SendMessage ("ResetToBeginning", SendMessageOptions.DontRequireReceiver);
-			g.SetActive (false);
+			g.SendMessage ("PlayReverse", SendMessageOptions.DontRequireReceiver);
 		}
+		yield return new WaitForSeconds (1f);
+		foreach (GameObject g in objectsShowingDuringClick)
+			g.SetActive (false);
+		foreach (GameObject g in objectsShowingToCharacter)
+			g.SetActive (false);
 		showing1 = false;
 		showing2 = false;
 		currentTimeShowing = -1f;
