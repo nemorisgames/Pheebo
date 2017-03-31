@@ -6,6 +6,10 @@ public class SketchbookBehaviour : MonoBehaviour {
 	public Illustration[] illustrations;
 	int currentIndex = 0;
 	AudioClip currentSound;
+	public AudioClip dingSound;
+	public AudioClip sketchbookOpenSound;
+	public AudioClip sketchbookCloseSound;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -16,6 +20,7 @@ public class SketchbookBehaviour : MonoBehaviour {
 	}
 
 	IEnumerator showIllustrationDelay(int index){
+		GetComponent<AudioSource> ().PlayOneShot (sketchbookOpenSound);
 		currentIndex = index;
 		for (int i = 0; i < illustrations.Length; i++) {
 			illustrations [i].illustrationBorder.SetActive (false);
@@ -30,11 +35,13 @@ public class SketchbookBehaviour : MonoBehaviour {
 		illustrations [currentIndex].illustrationBorder.SetActive (false);
 		illustrations [currentIndex].illustrationComplete.SetActive (true);
 
+		GetComponent<AudioSource> ().PlayOneShot (dingSound);
 		GetComponent<AudioSource> ().PlayOneShot (currentSound);
 		AC.LocalVariables.SetBooleanValue (0, false);
 	}
 
 	public void closeSketckbook(){
+		GetComponent<AudioSource> ().PlayOneShot (sketchbookCloseSound);
 		illustrations [currentIndex].illustrationComplete.SetActive (false);
 		StartCoroutine (showCloseDelay ());
 	}
